@@ -37,12 +37,14 @@ typedef struct context {
 	u32  stringLength;
 	u32  lineNumber;
 } context;
+
+#define YYSTACKDEPTH 150
 }
 
 %extra_context {context *c}
 
 %token_type   {tokenData}
-%default_type {tokenData}
+%default_type {terminalData}
 
 %syntax_error {
 	printf("%d\n", c->lineNumber);

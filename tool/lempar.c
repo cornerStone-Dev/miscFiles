@@ -378,7 +378,7 @@ void *ParseAlloc(void *(*mallocProc)(YYMALLOCARGTYPE) ParseCTX_PDECL){
 */
 static inline void yy_destructor(
   yyParser *yypParser,    /* The parser */
-  YYCODETYPE yymajor,     /* Type code for object to destroy */
+  int yymajor,     /* Type code for object to destroy */
   YYMINORTYPE *yypminor   /* The object to be destroyed */
 ){
   ParseARG_FETCH
@@ -508,9 +508,9 @@ int ParseCoverage(FILE *out){
 ** Find the appropriate action for a parser given the terminal
 ** look-ahead token iLookAhead.
 */
-static YYACTIONTYPE yy_find_shift_action(
-  YYCODETYPE iLookAhead,    /* The look-ahead token */
-  YYACTIONTYPE stateno      /* Current state number */
+static int yy_find_shift_action(
+  int iLookAhead,    /* The look-ahead token */
+  int stateno      /* Current state number */
 ){
   int i;
 
@@ -573,9 +573,9 @@ static YYACTIONTYPE yy_find_shift_action(
 ** Find the appropriate action for a parser given the non-terminal
 ** look-ahead token iLookAhead.
 */
-static YYACTIONTYPE yy_find_reduce_action(
-  YYACTIONTYPE stateno,     /* Current state number */
-  YYCODETYPE iLookAhead     /* The look-ahead token */
+static int yy_find_reduce_action(
+  int stateno,     /* Current state number */
+  int iLookAhead     /* The look-ahead token */
 ){
   int i;
 #ifdef YYERRORSYMBOL
@@ -646,8 +646,8 @@ static void yyTraceShift(yyParser *yypParser, int yyNewState, const char *zTag){
 */
 static void yy_shift(
   yyParser *yypParser,          /* The parser to be shifted */
-  YYACTIONTYPE yyNewState,      /* The new state to shift in */
-  YYCODETYPE yyMajor,           /* The major token to shift in */
+  int yyNewState,      /* The new state to shift in */
+  int yyMajor,           /* The major token to shift in */
   ParseTOKENTYPE *yyMinor        /* The minor token to shift in */
 ){
   yyStackEntry *yytos;
@@ -709,7 +709,7 @@ static void yy_accept(yyParser*);  /* Forward Declaration */
 ** only called from one place, optimizing compilers will in-line it, which
 ** means that the extra parameters have no performance impact.
 */
-static YYACTIONTYPE yy_reduce(
+static int yy_reduce(
   yyParser *yypParser,         /* The parser */
   unsigned int yyruleno,       /* Number of the rule by which to reduce */
   int yyLookahead,             /* Lookahead token, or YYNOCODE if none */
@@ -717,7 +717,7 @@ static YYACTIONTYPE yy_reduce(
   ParseCTX_PDECL                   /* %extra_context */
 ){
   int yygoto;                     /* The next state */
-  YYACTIONTYPE yyact;             /* The next action */
+  int yyact;             /* The next action */
   yyStackEntry *yymsp;            /* The top of the parser's stack */
   int yysize;                     /* Amount to pop the stack */
   ParseARG_FETCH
@@ -792,7 +792,7 @@ static YYACTIONTYPE yy_reduce(
   assert( yyruleno<sizeof(yyRuleInfoLhs)/sizeof(yyRuleInfoLhs[0]) );
   yygoto = yyRuleInfoLhs[yyruleno];
   yysize = yyRuleInfoNRhs[yyruleno];
-  yyact = yy_find_reduce_action(yymsp[yysize].stateno,(YYCODETYPE)yygoto);
+  yyact = yy_find_reduce_action(yymsp[yysize].stateno,yygoto);
 
   /* There are no SHIFTREDUCE actions on nonterminals because the table
   ** generator has simplified them to pure REDUCE actions. */
@@ -803,8 +803,8 @@ static YYACTIONTYPE yy_reduce(
 
   yymsp += yysize+1;
   yypParser->yytos = yymsp;
-  yymsp->stateno = (YYACTIONTYPE)yyact;
-  yymsp->major = (YYCODETYPE)yygoto;
+  yymsp->stateno = yyact;
+  yymsp->major = yygoto;
   yyTraceShift(yypParser, yyact, "... then shift");
   return yyact;
 }
@@ -906,7 +906,7 @@ void Parse(
   ParseARG_PDECL               /* Optional %extra_argument parameter */
 ){
   //~ YYMINORTYPE yyminorunion;
-  YYACTIONTYPE yyact;   /* The parser action. */
+  int yyact;   /* The parser action. */
 #if !defined(YYERRORSYMBOL) && !defined(YYNOERRORRECOVERY)
   int yyendofinput;     /* True if we are at the end of input */
 #endif
@@ -937,12 +937,12 @@ void Parse(
 
   do{
     assert( yyact==yypParser->yytos->stateno );
-    yyact = yy_find_shift_action((YYCODETYPE)yymajor,yyact);
+    yyact = yy_find_shift_action(yymajor,yyact);
     if( yyact >= YY_MIN_REDUCE ){
       yyact = yy_reduce(yypParser,yyact-YY_MIN_REDUCE,yymajor,
                         yyminor ParseCTX_PARAM);
     }else if( yyact <= YY_MAX_SHIFTREDUCE ){
-      yy_shift(yypParser,yyact,(YYCODETYPE)yymajor,yyminor);
+      yy_shift(yypParser,yyact,yymajor,yyminor);
 #ifndef YYNOERRORRECOVERY
       yypParser->yyerrcnt--;
 #endif
