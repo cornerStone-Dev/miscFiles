@@ -648,7 +648,7 @@ static void yy_shift(
   yyParser *yypParser,          /* The parser to be shifted */
   int yyNewState,      /* The new state to shift in */
   int yyMajor,           /* The major token to shift in */
-  ParseTOKENTYPE *yyMinor        /* The minor token to shift in */
+  ParseTOKENTYPE yyMinor        /* The minor token to shift in */
 ){
   yyStackEntry *yytos;
   yypParser->yytos++;
@@ -681,7 +681,7 @@ static void yy_shift(
   yytos = yypParser->yytos;
   yytos->stateno = yyNewState;
   yytos->major = yyMajor;
-  yytos->minor.yy0 = *yyMinor;
+  yytos->minor.yy0 = yyMinor;
   yyTraceShift(yypParser, yyNewState, "Shift");
 }
 
@@ -713,7 +713,7 @@ static int yy_reduce(
   yyParser *yypParser,         /* The parser */
   unsigned int yyruleno,       /* Number of the rule by which to reduce */
   int yyLookahead,             /* Lookahead token, or YYNOCODE if none */
-  ParseTOKENTYPE *yyLookaheadToken  /* Value of the lookahead token */
+  ParseTOKENTYPE yyLookaheadToken  /* Value of the lookahead token */
   ParseCTX_PDECL                   /* %extra_context */
 ){
   int yygoto;                     /* The next state */
@@ -840,7 +840,7 @@ static void yy_parse_failed(
 static void yy_syntax_error(
   yyParser *yypParser,           /* The parser */
   int yymajor,                   /* The major type of the error token */
-  ParseTOKENTYPE *yyminor         /* The minor type of the error token */
+  ParseTOKENTYPE yyminor         /* The minor type of the error token */
 ){
   ParseARG_FETCH
   ParseCTX_FETCH
@@ -902,7 +902,7 @@ static void yy_accept(
 void Parse(
   void *yyp,                   /* The parser */
   int yymajor,                 /* The major token code number */
-  ParseTOKENTYPE *yyminor       /* The value for the token */
+  ParseTOKENTYPE yyminor       /* The value for the token */
   ParseARG_PDECL               /* Optional %extra_argument parameter */
 ){
   //~ YYMINORTYPE yyminorunion;
@@ -1053,7 +1053,8 @@ void Parse(
       break;
 #endif
     }
-  }while( yypParser->yytos>yypParser->yystack );
+  //~ }while( yypParser->yytos>yypParser->yystack );
+  }while(1);
 #ifndef NDEBUG
   if( yyTraceFILE ){
     yyStackEntry *i;

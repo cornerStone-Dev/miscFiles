@@ -22,13 +22,13 @@ typedef double    f64;
 #define YYNOERRORRECOVERY 1
 typedef struct tokenData {
 	u8  *string;
-	u32  stringLength;
-	u32  lineNumber;
+	u64  data;
 } tokenData;
+
 typedef struct terminalData {
 	u8  *siblings;
-	u32  stringLength;
 	u32  lineNumber;
+	u32  stringLength;
 	u8  *children;
 } terminalData;
 
@@ -68,7 +68,7 @@ exampleParse(void *yyp,                   /* The parser */
 	)
 {
 	tokenData yyminor = *yyminorp;
-	Parse(yyp, yymajor, &yyminor);
+	Parse(yyp, yymajor, yyminor);
 	return 0;
 }
 }
