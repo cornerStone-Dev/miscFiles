@@ -1,6 +1,10 @@
 .PHONY: clean all
 
-all: tool tool/exampleGram.o
+all: tool tool/exampleGram.o tool/exampleLex.c scgi.o
+
+scgi.o: scgi.c scgi.h
+	gcc -Os -c -o scgi.o scgi.c -Wall -Wextra
+	size scgi.o
 
 tool:
 	mkdir tool
@@ -22,6 +26,9 @@ tool/lemon.c:
 tool/lempar.c:
 	curl https://raw.githubusercontent.com/sqlite/sqlite/master/tool/lempar.c \
 	> tool/lempar.c
+
+tool/exampleLex.c: tool/exampleLex.re
+	re2c -W -i tool/exampleLex.re -o tool/exampleLex.c
 
 #~ lempar_original.c:
 #~ 	curl https://raw.githubusercontent.com/sqlite/sqlite/master/tool/lempar.c \
