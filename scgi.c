@@ -70,7 +70,7 @@ s32
 scgiProcessRequest(scgiInfo *scgi, u8 *request)
 {
 	Pair p;
-	s32 retVal = 1;
+	s32 retVal = scgiUnprocessedHeaders;
 	
 	// reset scgiInfo to zero
 	{
@@ -175,7 +175,7 @@ scgiDebugPrintReturnCode(s32 code)
 		break;
 		
 		default:
-		return (u8*)"Not a valid return code.";
+		return (u8*)"Not a valid scgiProcessRequest return code.";
 	}
 }
 #endif
